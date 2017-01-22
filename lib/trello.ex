@@ -40,7 +40,7 @@ defmodule Trello do
     bid = find(boards, board)["id"]
     lists = trello_get_board_lists!(bid)
     lid = find(lists, list)
-    IO.inspect lid
+    #IO.inspect lid
     {:ok, "foo"}
   end
 
