@@ -7,7 +7,8 @@ use Mix.Config
 
 # General application configuration
 config :trellifier,
-  ecto_repos: [Trellifier.Repo]
+  ecto_repos: [Trellifier.Repo],
+  from_number: System.get_env("TWILIO_FROM_NUMBER")
 
 # Configures the endpoint
 config :trellifier, Trellifier.Endpoint,
@@ -22,11 +23,15 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :ex_twilio,
+  account_sid:   System.get_env("TWILIO_ACCOUNT_SID"),
+  auth_token:    System.get_env("TWILIO_AUTH_TOKEN")
+
+config :quantum, cron: [
+    "* * * * *": &Trellifier.notify_alex_bird/0
+  ],
+  timezone: "America/Los_Angeles"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
-
-config :ex_twilio,
-  account_sid:   {:system, "TWILIO_ACCOUNT_SID"},
-  auth_token:    {:system, "TWILIO_AUTH_TOKEN"},
-  workspace_sid: {:system, "TWILIO_WORKSPACE_SID"}

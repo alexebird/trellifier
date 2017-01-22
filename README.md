@@ -1,4 +1,18 @@
-# Trellifier
+Trellifier
+==========
+
+Questions
+---------
+- why are tests with `.exs` extension?
+- how do I know the structure of processes of the system and if it's optimal?
+
+Running
+-------
+Do this for iex history (without tab completion):
+
+```bash
+rlwrap -a -A iex -S mix phoenix.server
+```
 
 To start your Phoenix app:
 
@@ -11,10 +25,11 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
 
-## Learn more
+Setup
+--------
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+Install elixir: http://www.phoenixframework.org/docs/installation
+
+```bash
+sudo apt install -y erlang-observer
+```

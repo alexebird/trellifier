@@ -10,11 +10,11 @@ defmodule Trello do
   #
 
   def start_link do
-    GenServer.start_link(__MODULE__, :ok, [])
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def cards(server, member, board, list) do
-    GenServer.call(server, {:cards, member, board, list}, 30000)
+  def cards(member, board, list, n) do
+    GenServer.call(__MODULE__, {:cards, member, board, list, n}, 30000)
   end
 
 
@@ -26,8 +26,8 @@ defmodule Trello do
     {:ok, %{}}
   end
 
-  def handle_call({:cards, member, board, list}, from, state) do
-    {:reply, trello_get_cards(member, board, list), state}
+  def handle_call({:cards, member, board, list, n}, _from, state) do
+    {:reply, trello_get_cards(member, board, list, n), state}
   end
 
 
@@ -35,13 +35,16 @@ defmodule Trello do
   # trello client
   #
 
-  def trello_get_cards(member, board, list) do
+  def trello_get_cards(member, board, list, n) do
     boards = trello_get_member_boards!(member)
     bid = find(boards, board)["id"]
     lists = trello_get_board_lists!(bid)
-    lid = find(lists, list)
-    #IO.inspect lid
-    {:ok, "foo"}
+    list = find(lists, list)
+    cards = case n do
+      -1 -> list["cards"]
+      _ -> Enum.take(list["cards"], n)
+      end
+    {:ok, cards}
   end
 
   def trello_get_board_lists!(board_id) do
@@ -52,7 +55,9 @@ defmodule Trello do
   end
 
   def find(coll, name) do
-    Enum.find(coll, fn(b) -> b["name"] == name end)
+    Enum.find coll, fn(e)->
+      e["name"] == name
+    end
   end
 
   def trello_get_member_boards!(member) do
@@ -62,15 +67,15 @@ defmodule Trello do
   end
 
   def get!(url, query \\ []) do
-    query = query ++ [{"key", @api_key},
-                      {"token", @api_token}]
+    query = query ++ [{"key", @api_key}, {"token", @api_token}]
     HTTPoison.get!("#{@base_url}/#{url}?#{query_string(query)}")
       |> Map.get(:body)
       |> Poison.decode!
   end
 
   def query_string(pairs) do
-    Enum.map(pairs, fn{k,v}-> "#{k}=#{v}" end)
-      |> Enum.join("&")
+    Enum.map(pairs, fn{k,v}->
+      "#{k}=#{v}"
+    end) |> Enum.join("&")
   end
 end

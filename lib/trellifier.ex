@@ -14,6 +14,8 @@ defmodule Trellifier do
       supervisor(Trellifier.Endpoint, []),
       # Start your own worker by calling: Trellifier.Worker.start_link(arg1, arg2, arg3)
       # worker(Trellifier.Worker, [arg1, arg2, arg3]),
+      worker(Trello, []),
+      worker(SmsSender, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
@@ -27,5 +29,12 @@ defmodule Trellifier do
   def config_change(changed, _new, removed) do
     Trellifier.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def notify_alex_bird() do
+    {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
+    {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", 3)
+    body = Enum.map(doing ++ this_week, &("- " <> &1["name"])) |> Enum.join("\n")
+    {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 end

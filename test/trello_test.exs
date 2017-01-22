@@ -2,12 +2,19 @@ defmodule TrelloTest do
   use ExUnit.Case, async: true
 
   setup do
-    {:ok, trello} = Trello.start_link
-    {:ok, trello: trello, member: "alexbird5", board: "Todo", list: "This Week"}
+    Trello.start_link
+    {:ok,
+      member: "alexbird5",
+      board: "Todo",
+      list: "This Week",
+      n: 3,
+    }
   end
 
-  test "gets trello cards", %{trello: trello, member: member, board: board, list: list} do
-    {status, _} = Trello.cards(trello, member, board, list)
+  test "gets trello cards", %{member: member, board: board, list: list, n: n} do
+    {status, cards} = Trello.cards(member, board, list, n)
+    #IO.inspect cards
     assert status == :ok
+    assert length(cards) == n
   end
 end

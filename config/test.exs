@@ -17,3 +17,10 @@ config :trellifier, Trellifier.Repo,
   database: "trellifier_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :ex_twilio,
+  account_sid:   System.get_env("TWILIO_TEST_ACCOUNT_SID"),
+  auth_token:    System.get_env("TWILIO_TEST_AUTH_TOKEN")
+
+config :trellifier,
+  from_number: System.get_env("TWILIO_TEST_FROM_NUMBER")
