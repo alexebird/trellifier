@@ -31,5 +31,7 @@ Setup
 Install elixir: http://www.phoenixframework.org/docs/installation
 
 ```bash
-sudo apt install -y erlang-observer
+sudo apt install -y erlang-observer erlang-dev
+sudo apt-get install erlang-base-hipe
+# may need to install erlang-parsetools as well
 ```

@@ -19,7 +19,8 @@ defmodule Trellifier.Mixfile do
   def application do
     [mod: {Trellifier, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :httpoison, :ex_twilio, :quantum]]
+                    #:phoenix_ecto, :postgrex,
+                    :httpoison, :ex_twilio, :quantum]]
   end
 
   # Specifies which paths to compile per environment.
@@ -32,7 +33,7 @@ defmodule Trellifier.Mixfile do
   defp deps do
     [{:phoenix, "~> 1.2.1"},
      {:phoenix_pubsub, "~> 1.0"},
-     {:phoenix_ecto, "~> 3.0"},
+     #{:phoenix_ecto, "~> 3.0"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
@@ -41,6 +42,7 @@ defmodule Trellifier.Mixfile do
      {:httpoison, "~> 0.10.0"},
      {:ex_twilio, "~> 0.3.0"},
      {:quantum, ">= 1.8.1"},
+     {:exrm, "~> 0.15.3"},
    ]
   end
 
@@ -51,8 +53,8 @@ defmodule Trellifier.Mixfile do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
-    ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-     "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
+    #["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+     #"ecto.reset": ["ecto.drop", "ecto.setup"],
+     #"test": ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end

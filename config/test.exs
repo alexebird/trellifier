@@ -10,13 +10,13 @@ config :trellifier, Trellifier.Endpoint,
 config :logger, level: :warn
 
 # Configure your database
-config :trellifier, Trellifier.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "trellifier_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+#config :trellifier, Trellifier.Repo,
+  #adapter: Ecto.Adapters.Postgres,
+  #username: "postgres",
+  #password: "postgres",
+  #database: "trellifier_test",
+  #hostname: "localhost",
+  #pool: Ecto.Adapters.SQL.Sandbox
 
 config :ex_twilio,
   account_sid:   System.get_env("TWILIO_TEST_ACCOUNT_SID"),

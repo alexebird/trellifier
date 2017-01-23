@@ -18,11 +18,11 @@ defmodule Trellifier.Web do
 
   def model do
     quote do
-      use Ecto.Schema
+      #use Ecto.Schema
 
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
+      #import Ecto
+      #import Ecto.Changeset
+      #import Ecto.Query
     end
   end
 
@@ -30,9 +30,9 @@ defmodule Trellifier.Web do
     quote do
       use Phoenix.Controller
 
-      alias Trellifier.Repo
-      import Ecto
-      import Ecto.Query
+      #alias Trellifier.Repo
+      #import Ecto
+      #import Ecto.Query
 
       import Trellifier.Router.Helpers
       import Trellifier.Gettext
@@ -66,8 +66,8 @@ defmodule Trellifier.Web do
       use Phoenix.Channel
 
       alias Trellifier.Repo
-      import Ecto
-      import Ecto.Query
+      #import Ecto
+      #import Ecto.Query
       import Trellifier.Gettext
     end
   end
