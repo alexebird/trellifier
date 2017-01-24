@@ -11,6 +11,7 @@ Running
 Do this for iex history (without tab completion):
 
 ```bash
+eval $(gpg -d secrets/secrets.sh.gpg)
 rlwrap -a -A iex -S mix phoenix.server
 ```
 
@@ -40,6 +41,7 @@ Releasing
 ---------
 
 ```bash
+eval $(gpg -d secrets/secrets.sh.gpg)
 MIX_ENV=prod mix do compile, release
 
 docker build -t 663971007925.dkr.ecr.us-west-1.amazonaws.com/trellifier:$(git rev-parse HEAD | awk '{$1 = substr($1, 1, 7)} 1') .
