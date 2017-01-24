@@ -17,6 +17,10 @@ defmodule Trello do
     GenServer.call(__MODULE__, {:cards, member, board, list, n}, 30000)
   end
 
+  def schedules(member, board, list) do
+    GenServer.call(__MODULE__, {:schedules, member, board, list}, 30000)
+  end
+
 
   #
   # server callbacks
@@ -30,10 +34,33 @@ defmodule Trello do
     {:reply, trello_get_cards(member, board, list, n), state}
   end
 
+  def handle_call({:schedules, member, board, list}, _from, state) do
+    {:reply, trello_get_schedules(member, board, list), state}
+  end
+
 
   #
   # trello client
   #
+
+  def trello_get_schedules(member, board, list) do
+    {:ok, cards} = trello_get_cards(member, board, list, -1)
+    scheds = Enum.map(cards, &make_quantum/1)
+    {:ok, scheds}
+  end
+
+  def make_quantum(card) do
+    [stars, func]  = Enum.chunk(String.split(card["name"], ~r/\s/), 5, 5, [])
+    [module, func] = String.split(List.first(func), ".")
+
+    {
+      String.to_atom("card_id_" <> card["id"]),
+      %Quantum.Job{
+        schedule: Enum.join(stars, " "),
+        timezone: "America/Los_Angeles",
+        task:     {module, String.to_atom(func)}}
+    }
+  end
 
   def trello_get_cards(member, board, list, n) do
     boards = trello_get_member_boards!(member)

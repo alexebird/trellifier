@@ -28,8 +28,7 @@ config :ex_twilio,
   auth_token:    System.get_env("TWILIO_AUTH_TOKEN")
 
 config :quantum, cron: [
-    "0 8 * * *": {"Trellifier", :notify_alex_bird},  #    8AM
-    "30 13 * * *": {"Trellifier", :notify_alex_bird} # 1:30PM
+    "* * * * *": {"Trellifier", :refresh_schedules}
   ],
   timezone: "America/Los_Angeles"
 

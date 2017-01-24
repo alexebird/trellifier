@@ -20,10 +20,10 @@ defmodule Trellifier.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias Trellifier.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
+      #alias Trellifier.Repo
+      #import Ecto
+      #import Ecto.Changeset
+      #import Ecto.Query
 
 
       # The default endpoint for testing
@@ -32,11 +32,11 @@ defmodule Trellifier.ChannelCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Trellifier.Repo)
+    #:ok = Ecto.Adapters.SQL.Sandbox.checkout(Trellifier.Repo)
 
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Trellifier.Repo, {:shared, self()})
-    end
+    #unless tags[:async] do
+      #Ecto.Adapters.SQL.Sandbox.mode(Trellifier.Repo, {:shared, self()})
+    #end
 
     :ok
   end

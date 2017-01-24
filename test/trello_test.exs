@@ -11,10 +11,16 @@ defmodule TrelloTest do
     }
   end
 
-  test "gets trello cards", %{member: member, board: board, list: list, n: n} do
+  test "it should get trello cards", %{member: member, board: board, list: list, n: n} do
     {status, cards} = Trello.cards(member, board, list, n)
-    #IO.inspect cards
     assert status == :ok
+    #IO.inspect cards
     assert length(cards) == n
+  end
+
+  test "it should get the schedules", %{member: member} do
+    {status, scheds} = Trello.schedules(member, "Trellifier", "Schedules")
+    #IO.inspect scheds
+    assert status == :ok
   end
 end

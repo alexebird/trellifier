@@ -16,24 +16,24 @@ defmodule Trellifier.ModelCase do
 
   using do
     quote do
-      alias Trellifier.Repo
+      #alias Trellifier.Repo
 
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-      import Trellifier.ModelCase
+      #import Ecto
+      #import Ecto.Changeset
+      #import Ecto.Query
+      #import Trellifier.ModelCase
     end
   end
 
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Trellifier.Repo)
+  #setup tags do
+    #:ok = Ecto.Adapters.SQL.Sandbox.checkout(Trellifier.Repo)
 
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Trellifier.Repo, {:shared, self()})
-    end
+    #unless tags[:async] do
+      #Ecto.Adapters.SQL.Sandbox.mode(Trellifier.Repo, {:shared, self()})
+    #end
 
-    :ok
-  end
+    #:ok
+  #end
 
   @doc """
   Helper for returning list of errors in a struct when given certain data.
@@ -57,9 +57,9 @@ defmodule Trellifier.ModelCase do
       iex> {:password, "is unsafe"} in changeset.errors
       true
   """
-  def errors_on(struct, data) do
-    struct.__struct__.changeset(struct, data)
-    |> Ecto.Changeset.traverse_errors(&Trellifier.ErrorHelpers.translate_error/1)
-    |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
-  end
+  #def errors_on(struct, data) do
+    #struct.__struct__.changeset(struct, data)
+    #|> Ecto.Changeset.traverse_errors(&Trellifier.ErrorHelpers.translate_error/1)
+    #|> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
+  #end
 end

@@ -1,5 +1,6 @@
 defmodule Trellifier do
   use Application
+  require Logger
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
@@ -31,10 +32,45 @@ defmodule Trellifier do
     :ok
   end
 
-  def notify_alex_bird() do
+  def notify_bird() do
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", 3)
     body = Enum.map(doing ++ this_week, &("- " <> &1["name"])) |> Enum.join("\n")
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
+  end
+
+  def refresh_schedules() do
+    Logger.info "refresh_schedules"
+    {:ok, trello_jobs} = Trello.schedules("alexbird5", "Trellifier", "Schedules")
+    quantum_jobs = Quantum.jobs
+    del = schedules_to_delete(trello_jobs, quantum_jobs) |> Enum.reject(fn(e)-> e == nil end)
+    start = schedules_to_start(trello_jobs, quantum_jobs)
+
+    Enum.each del, fn(e)->
+      Logger.info "deleting quantum job #{e}"
+      Quantum.delete_job(e)
+    end
+
+    Enum.each start, fn(e)->
+      Logger.info "starting quantum job #{e}"
+      Quantum.add_job(e, Keyword.get(trello_jobs, e))
+    end
+
+    curr = Quantum.jobs |> Keyword.keys |> Enum.reject(fn(e)-> e == nil end)
+    Enum.each curr, fn(e)->
+      Logger.info "quantum job #{e} is running"
+    end
+  end
+
+  def schedules_to_delete(trello_jobs, quantum_jobs) do
+    desired_names = trello_jobs |> Keyword.keys |> MapSet.new
+    active_names = quantum_jobs |> Keyword.keys |> MapSet.new
+    MapSet.difference(active_names, desired_names)
+  end
+
+  def schedules_to_start(trello_jobs, quantum_jobs) do
+    desired_names = trello_jobs |> Keyword.keys |> MapSet.new
+    active_names = quantum_jobs |> Keyword.keys |> MapSet.new
+    MapSet.difference(desired_names, active_names)
   end
 end

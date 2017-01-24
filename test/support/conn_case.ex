@@ -20,10 +20,10 @@ defmodule Trellifier.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias Trellifier.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
+      #alias Trellifier.Repo
+      #import Ecto
+      #import Ecto.Changeset
+      #import Ecto.Query
 
       import Trellifier.Router.Helpers
 
@@ -32,13 +32,13 @@ defmodule Trellifier.ConnCase do
     end
   end
 
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Trellifier.Repo)
+  #setup tags do
+    #:ok = Ecto.Adapters.SQL.Sandbox.checkout(Trellifier.Repo)
 
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Trellifier.Repo, {:shared, self()})
-    end
+    #unless tags[:async] do
+      #Ecto.Adapters.SQL.Sandbox.mode(Trellifier.Repo, {:shared, self()})
+    #end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
-  end
+    #{:ok, conn: Phoenix.ConnTest.build_conn()}
+  #end
 end
