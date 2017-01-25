@@ -83,7 +83,7 @@ defmodule Trello do
 
   def find(coll, name) do
     Enum.find coll, fn(e)->
-      e["name"] == name
+      String.downcase(e["name"]) =~ String.downcase(name)
     end
   end
 

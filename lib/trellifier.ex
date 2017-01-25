@@ -39,6 +39,19 @@ defmodule Trellifier do
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 
+  def notify_progress() do
+    {:ok, done} = Trello.cards("alexbird5", "Todo", "Done", -1)
+    {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
+    {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", -1)
+    total = Enum.reduce([done, doing, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
+    body = """
+    done: #{Enum.count(done)}/#{total}
+    doing: #{Enum.count(doing)}
+    todo: #{Enum.count(this_week)}
+    """
+    {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
+  end
+
   def refresh_schedules() do
     Logger.info "refresh_schedules"
     {:ok, trello_jobs} = Trello.schedules("alexbird5", "Trellifier", "Schedules")
