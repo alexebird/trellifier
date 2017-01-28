@@ -5,7 +5,8 @@ RUN apt-get update && \
 RUN mkdir -p /app
 ARG VERSION=0.0.1
 ENV APP_NAME trellifier
-COPY rel/${APP_NAME}/${APP_NAME}-${VERSION}.tar.gz /app/${APP_NAME}.tar.gz
+COPY ${APP_NAME}-${VERSION}.tar.gz /app/${APP_NAME}.tar.gz
+#COPY ${APP_NAME} /app/${APP_NAME}
 WORKDIR /app
 RUN tar xvzf ${APP_NAME}.tar.gz
 RUN locale-gen en_US.UTF-8

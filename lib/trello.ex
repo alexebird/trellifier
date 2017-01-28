@@ -21,6 +21,10 @@ defmodule Trello do
     GenServer.call(__MODULE__, {:schedules, member, board, list}, 30000)
   end
 
+  def velocity(member, board, list) do
+    GenServer.call(__MODULE__, {:velocity, member, board, list}, 30000)
+  end
+
 
   #
   # server callbacks
@@ -36,6 +40,10 @@ defmodule Trello do
 
   def handle_call({:schedules, member, board, list}, _from, state) do
     {:reply, trello_get_schedules(member, board, list), state}
+  end
+
+  def handle_call({:velocity, member, board, list}, _from, state) do
+    {:reply, trello_get_velocity(member, board, list), state}
   end
 
 
@@ -62,6 +70,19 @@ defmodule Trello do
     }
   end
 
+  def trello_get_velocity(member, board, list) do
+    boards = trello_get_member_boards!(member)
+    bid = find(boards, board)["id"]
+    weeks = 3
+    vel = trello_get_board_lists!(bid, "closed")
+          |> filter(list)
+          |> Enum.take(weeks)
+          |> Enum.map(&(Enum.count &1["cards"]))
+          |> Enum.sum
+    #IO.inspect vel
+    {:ok, vel / (weeks/1)}
+  end
+
   def trello_get_cards(member, board, list, n) do
     boards = trello_get_member_boards!(member)
     bid = find(boards, board)["id"]
@@ -74,15 +95,21 @@ defmodule Trello do
     {:ok, cards}
   end
 
-  def trello_get_board_lists!(board_id) do
+  def trello_get_board_lists!(board_id, filter \\ "open") do
     get!("/boards/#{board_id}/lists",
          [{"fields", "name"},
           {"cards", "open"},
+          {"filter", filter},
           {"card_fields", "name,dateLastActivity,desc,due,shortUrl,pos"}])
   end
 
   def find(coll, name) do
     Enum.find coll, fn(e)->
+      String.downcase(e["name"]) =~ String.downcase(name)
+    end
+  end
+  def filter(coll, name) do
+    Enum.filter coll, fn(e)->
       String.downcase(e["name"]) =~ String.downcase(name)
     end
   end

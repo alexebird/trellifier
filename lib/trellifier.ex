@@ -43,14 +43,24 @@ defmodule Trellifier do
     {:ok, done} = Trello.cards("alexbird5", "Todo", "Done", -1)
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", -1)
+    {:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
     total = Enum.reduce([done, doing, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
     body = """
-    done: #{Enum.count(done)}/#{total}
-    doing: #{Enum.count(doing)}
-    todo: #{Enum.count(this_week)}
+    #{Enum.count(this_week)}-#{Enum.count(doing)}-#{Enum.count(done)}/#{total}
+    vel:  #{:io_lib.format("~.2f",  [vel])}
     """
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
+
+  #def notify_velocity() do
+    #{:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
+    #body = """
+    #done: #{Enum.count(done)}/#{total}
+    #doing: #{Enum.count(doing)}
+    #todo: #{Enum.count(this_week)}
+    #"""
+    #{:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
+  #end
 
   def refresh_schedules() do
     Logger.info "refresh_schedules"

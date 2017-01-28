@@ -23,4 +23,10 @@ defmodule TrelloTest do
     #IO.inspect scheds
     assert status == :ok
   end
+
+  test "it should get the velocity", %{member: member} do
+    {status, lists} = Trello.velocity(member, "Todo", "Done")
+    IO.inspect lists
+    assert status == :ok
+  end
 end
