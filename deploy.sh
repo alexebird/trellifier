@@ -32,9 +32,9 @@ fi
 #rm -rf rel
 #MIX_ENV=prod mix do compile, release
 
-#${SSH} rm -rf "${BUILD_DIR}"
-#${SSH} mkdir -p "${BUILD_DIR}"
-#rsync -a --progress ./Dockerfile.remote "periodic:${BUILD_DIR}/"
+${SSH} rm -rf "${BUILD_DIR}"
+${SSH} mkdir -p "${BUILD_DIR}"
+rsync -a --progress ./Dockerfile.remote "periodic:${BUILD_DIR}/"
 
 # not using this
 #rm -rf "${BUILD_DIR}"
@@ -42,13 +42,13 @@ fi
 #tar xzf rel/trellifier/trellifier-${VERSION}.tar.gz -C "${BUILD_DIR}"
 #rsync -a --progress "${BUILD_DIR}" "periodic:${BUILD_DIR}"
 
-#rsync -a --progress "rel/trellifier/trellifier-${VERSION}.tar.gz" "periodic:${BUILD_DIR}"
-#${SSH} "cd ${BUILD_DIR}/trellifier && ls"
-#${SSH} "cd ${BUILD_DIR} && docker build --build-arg=VERSION=${VERSION} -f Dockerfile.remote -t trellifier:${vVERSION} ."
+rsync -a --progress "rel/trellifier/trellifier-${VERSION}.tar.gz" "periodic:${BUILD_DIR}"
+${SSH} "cd ${BUILD_DIR}/trellifier && ls"
+${SSH} "cd ${BUILD_DIR} && docker build --build-arg=VERSION=${VERSION} -f Dockerfile.remote -t trellifier:${vVERSION} ."
 
 ssh_tunnel
 
-#docker tag "trellifier:${vVERSION}" trellifier:latest
+docker tag "trellifier:${vVERSION}" trellifier:latest
 docker rm -f trellifier || true
 docker run -d \
   -e TRELLO_API_KEY \
