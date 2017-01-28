@@ -42,7 +42,7 @@ defmodule Trellifier.Mixfile do
      {:httpoison, "~> 0.10.0"},
      {:ex_twilio, "~> 0.3.0"},
      {:quantum, ">= 1.8.1"},
-     {:exrm, "~> 0.15.3"},
+     {:distillery, "~> 1.0"},
    ]
   end
 
