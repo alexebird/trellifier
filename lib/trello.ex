@@ -108,6 +108,7 @@ defmodule Trello do
       String.downcase(e["name"]) =~ String.downcase(name)
     end
   end
+
   def filter(coll, name) do
     Enum.filter coll, fn(e)->
       String.downcase(e["name"]) =~ String.downcase(name)
@@ -128,7 +129,7 @@ defmodule Trello do
   end
 
   def query_string(pairs) do
-    Enum.map(pairs, fn{k,v}->
+    Enum.map(pairs, fn({k,v})->
       "#{k}=#{v}"
     end) |> Enum.join("&")
   end

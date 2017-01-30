@@ -44,23 +44,18 @@ defmodule Trellifier do
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", -1)
     {:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
+    {:ok, quarter} = Trello.cards("alexbird5", "Todo", "2017-Q1", -1)
+
     total = Enum.reduce([done, doing, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
+
     body = """
     #{Enum.count(this_week)}-#{Enum.count(doing)}-#{Enum.count(done)}/#{total}
-    vel:  #{:io_lib.format("~.2f",  [vel])}
+    vel: #{:io_lib.format("~.1f",  [vel])}
+    Q:   #{Enum.count quarter}
     """
+
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
-
-  #def notify_velocity() do
-    #{:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
-    #body = """
-    #done: #{Enum.count(done)}/#{total}
-    #doing: #{Enum.count(doing)}
-    #todo: #{Enum.count(this_week)}
-    #"""
-    #{:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
-  #end
 
   def refresh_schedules() do
     Logger.info "refresh_schedules"
@@ -85,15 +80,17 @@ defmodule Trellifier do
     end
   end
 
-  def schedules_to_delete(trello_jobs, quantum_jobs) do
-    desired_names = trello_jobs |> Keyword.keys |> MapSet.new
-    active_names = quantum_jobs |> Keyword.keys |> MapSet.new
-    MapSet.difference(active_names, desired_names)
+  defp schedules_to_delete(trello_jobs, quantum_jobs) do
+    job_set_difference(quantum_jobs, trello_jobs)
   end
 
-  def schedules_to_start(trello_jobs, quantum_jobs) do
-    desired_names = trello_jobs |> Keyword.keys |> MapSet.new
-    active_names = quantum_jobs |> Keyword.keys |> MapSet.new
-    MapSet.difference(desired_names, active_names)
+  defp schedules_to_start(trello_jobs, quantum_jobs) do
+    job_set_difference(trello_jobs, quantum_jobs)
+  end
+
+  defp job_set_difference(jobs_a, jobs_b) do
+    names_a = jobs_a |> Keyword.keys |> MapSet.new
+    names_b = jobs_b |> Keyword.keys |> MapSet.new
+    MapSet.difference(names_a, names_b)
   end
 end
