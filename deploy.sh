@@ -29,7 +29,6 @@ if ! git tag | grep -q "${vVERSION}"; then
 fi
 
 # on/off
-rm -rf rel
 MIX_ENV=prod mix do compile, release
 
 ${SSH} rm -rf "${BUILD_DIR}"
