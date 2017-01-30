@@ -29,7 +29,7 @@ if ! git tag | grep -q "${vVERSION}"; then
 fi
 
 # on/off
-MIX_ENV=prod mix do compile, release
+MIX_ENV=prod mix release --env=prod
 
 ${SSH} rm -rf "${BUILD_DIR}"
 ${SSH} mkdir -p "${BUILD_DIR}"
@@ -41,7 +41,7 @@ rsync -a --progress ./Dockerfile.remote "periodic:${BUILD_DIR}/"
 #tar xzf rel/trellifier/trellifier-${VERSION}.tar.gz -C "${BUILD_DIR}"
 #rsync -a --progress "${BUILD_DIR}" "periodic:${BUILD_DIR}"
 
-rsync -a --progress "rel/trellifier/trellifier-${VERSION}.tar.gz" "periodic:${BUILD_DIR}"
+rsync -a --progress "_build/prod/rel/trellifier/releases/${VERSION}/trellifier.tar.gz" "periodic:${BUILD_DIR}"
 
 #${SSH} "cd ${BUILD_DIR}/trellifier && ls"
 ${SSH} "cd ${BUILD_DIR} && docker build --build-arg=VERSION=${VERSION} -f Dockerfile.remote -t trellifier:${vVERSION} ."
