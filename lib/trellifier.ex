@@ -32,6 +32,18 @@ defmodule Trellifier do
     :ok
   end
 
+  def notify_goals() do
+    {:ok, goals} = Trello.cards("alexbird5", "Goals", "Goals", 3)
+    {:ok, accomplished} = Trello.cards("alexbird5", "Goals", "Accomplished", -1)
+
+    body = """
+    #{Enum.map(goals, &("G: " <> &1["name"])) |> Enum.join("\n")}
+    Accs: #{Enum.count(accomplished)}
+    """
+
+    {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
+  end
+
   def notify_bird() do
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", 3)
