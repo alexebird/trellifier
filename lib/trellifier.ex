@@ -48,6 +48,9 @@ defmodule Trellifier do
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "Today", 3)
     body = Enum.map(doing ++ this_week, &("- " <> &1["name"])) |> Enum.join("\n")
+    if body == "" do
+      body = "you must be productive. 0 things to do!"
+    end
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 
