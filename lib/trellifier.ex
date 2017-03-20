@@ -46,7 +46,7 @@ defmodule Trellifier do
 
   def notify_bird() do
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
-    {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", 3)
+    {:ok, this_week} = Trello.cards("alexbird5", "Todo", "Today", 3)
     body = Enum.map(doing ++ this_week, &("- " <> &1["name"])) |> Enum.join("\n")
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
@@ -54,11 +54,12 @@ defmodule Trellifier do
   def notify_progress() do
     {:ok, done} = Trello.cards("alexbird5", "Todo", "Done", -1)
     {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
+    {:ok, today} = Trello.cards("alexbird5", "Todo", "Today", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", -1)
     {:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
     {:ok, quarter} = Trello.cards("alexbird5", "Todo", "2017-Q1", -1)
 
-    total = Enum.reduce([done, doing, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
+    total = Enum.reduce([done, doing, today, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
 
     body = """
     #{Enum.count(this_week)}-#{Enum.count(doing)}-#{Enum.count(done)}/#{total}
