@@ -44,6 +44,8 @@ Releasing
 eval $(gpg -d secrets/secrets.sh.gpg)
 ./deploy.sh
 
+docker exec -it trellifier bin/trellifier remote_console
+
 
 MIX_ENV=prod mix do compile, release
 git tag "v$(cat mix.exs | grep -A2 'def project' | grep version | sed -e's/^.\+version: "//' -e's/",//')"

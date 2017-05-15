@@ -60,7 +60,7 @@ defmodule Trellifier do
     {:ok, today} = Trello.cards("alexbird5", "Todo", "Today", -1)
     {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", -1)
     {:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
-    {:ok, quarter} = Trello.cards("alexbird5", "Todo", "2017-Q1", -1)
+    {:ok, quarter} = Trello.cards("alexbird5", "Todo", "2017-Q2", -1)
 
     total = Enum.reduce([done, doing, today, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
 
