@@ -57,16 +57,58 @@ defmodule Trello do
     {:ok, scheds}
   end
 
-  def make_quantum(card) do
-    [stars, func]  = Enum.chunk(String.split(card["name"], ~r/\s/), 5, 5, [])
+  #def join_quoted_strings(lst) do
+    #lst
+    #|> Enum.reduce([[], nil], fn(e, [acc, l])->
+      #cond do
+        #String.match?(e, ~r/\A\"/) ->
+          #[acc, e]
+        #String.match?(e, ~r/\"\z/) ->
+          #[acc ++ [l <> " " <> e], nil]
+        #l != nil ->
+          #[acc, l <> " " <> e]
+        #true ->
+          #[acc ++ [e], nil]
+      #end
+    #end)
+  #end
+
+  def parse_args(str) do
+    Regex.split(~r/\".*\"/, str, include_captures: true)
+    |> Enum.map(fn(e)->
+      unless String.match?(e, ~r/\"/) do
+        String.split(e, " ", trim: true)
+      else
+        e
+      end
+    end)
+    |> List.flatten
+  end
+
+  def make_quantum(%{"name" => name, "id" => id}) do
+    stars = String.split(name, ~r/\s/, parts: 6)
+            |> Enum.take(5)
+    func  = String.split(name, ~r/\s/, parts: 7)
+            |> Enum.drop(5)
+    args  = Enum.drop(func, 1)
+            |> List.last()
+            |> parse_args()
+    board = args |> Enum.take(1)
+    lists = args
+            |> Enum.drop(1)
+            |> Enum.chunk(2, 2, [])
+            |> Enum.map(fn([list, n])-> [list, String.to_integer(n)] end)
+    args = board ++ lists
     [module, func] = String.split(List.first(func), ".")
 
     {
-      String.to_atom("card_id_" <> card["id"]),
+      String.to_atom("card_id_" <> id),
       %Quantum.Job{
         schedule: Enum.join(stars, " "),
         timezone: "America/Los_Angeles",
-        task:     {module, String.to_atom(func)}}
+        task:     {module, String.to_atom(func)},
+        args:     args,
+      }
     }
   end
 

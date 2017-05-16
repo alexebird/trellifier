@@ -15,7 +15,7 @@ ssh_tunnel() {
 }
 
 if [[ -z "${TRELLO_API_KEY}" ]]; then
-  echo 'run: eval $(gpg -d secrets/secrets.sh.gpg)'
+  echo 'run: eval $(gpg -d secrets/env.sh.gpg)'
   exit 1
 fi
 

@@ -44,13 +44,19 @@ defmodule Trellifier do
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 
-  def notify_bird() do
-    {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
-    {:ok, this_week} = Trello.cards("alexbird5", "Todo", "Today", 3)
-    body = case doing ++ this_week do
-      []  -> "you must be productive. 0 things to do!"
-      bod -> Enum.map(bod, &("- " <> &1["name"])) |> Enum.join("\n")
+  def notify_top_n(board, lists) do
+    cards = lists |> Enum.flat_map(fn([list, n])->
+      {:ok, more_cards} = Trello.cards("alexbird5", board, list, n)
+      more_cards
+    end)
+
+    body = case cards do
+      []  ->
+        "you must be productive. 0 things to do!"
+      bod ->
+        Enum.map(bod, &("- " <> &1["name"])) |> Enum.join("\n")
     end
+
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 
@@ -77,17 +83,18 @@ defmodule Trellifier do
     Logger.info "refresh_schedules"
     {:ok, trello_jobs} = Trello.schedules("alexbird5", "Trellifier", "Schedules")
     quantum_jobs = Quantum.jobs
-    del = schedules_to_delete(trello_jobs, quantum_jobs) |> Enum.reject(fn(e)-> e == nil end)
+    del = schedules_to_delete(trello_jobs, quantum_jobs)
+          |> Enum.reject(fn(e)-> e == nil end)
     start = schedules_to_start(trello_jobs, quantum_jobs)
 
-    Enum.each del, fn(e)->
-      Logger.info "deleting quantum job #{e}"
-      Quantum.delete_job(e)
+    Enum.each del, fn(job)->
+      Logger.info "deleting quantum job #{job}"
+      Quantum.delete_job(job)
     end
 
-    Enum.each start, fn(e)->
-      Logger.info "starting quantum job #{e}"
-      Quantum.add_job(e, Keyword.get(trello_jobs, e))
+    Enum.each start, fn(job)->
+      Logger.info "starting quantum job #{job}"
+      Quantum.add_job(job, Keyword.get(trello_jobs, job))
     end
 
     curr = Quantum.jobs |> Keyword.keys |> Enum.reject(fn(e)-> e == nil end)
