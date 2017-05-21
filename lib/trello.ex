@@ -5,6 +5,7 @@ defmodule Trello do
   @base_url  "https://api.trello.com/1"
   @api_key   (System.get_env("TRELLO_API_KEY")   || (IO.puts("must set TRELLO_API_KEY")   && System.halt(1)))
   @api_token (System.get_env("TRELLO_API_TOKEN") || (IO.puts("must set TRELLO_API_TOKEN") && System.halt(1)))
+  @module_name Trellifier
 
   #
   # client api
@@ -102,7 +103,6 @@ defmodule Trello do
             |> Enum.chunk(2, 2, [])
             |> Enum.map(fn([list, n])-> [list, String.to_integer(n)] end)
     args = board ++ lists
-    #[module, func] = String.split(List.first(func), ".")
     func = List.first(func)
 
     if String.starts_with?(func, "notify_") do
@@ -111,7 +111,7 @@ defmodule Trello do
         %Quantum.Job{
           schedule: Enum.join(stars, " "),
           timezone: "America/Los_Angeles",
-          task:     {Trellifier, String.to_atom(func)},
+          task:     {@module_name, String.to_atom(func)},
           args:     args,
         }
       }
