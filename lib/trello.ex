@@ -90,6 +90,7 @@ defmodule Trello do
   end
 
   def make_quantum(%{"name" => name, "id" => id}) do
+    Logger.info "schedule: '#{name}'"
     stars = String.split(name, ~r/\s/, parts: 6)
             |> Enum.take(5)
     func  = String.split(name, ~r/\s/, parts: 7)
@@ -102,7 +103,7 @@ defmodule Trello do
             |> Enum.drop(1)
             |> Enum.chunk(2, 2, [])
             |> Enum.map(fn([list, n])-> [list, String.to_integer(n)] end)
-    args = board ++ lists
+    args = board ++ [lists]
     func = List.first(func)
 
     if String.starts_with?(func, "notify_") do

@@ -29,7 +29,7 @@ if ! git tag | grep -q "${vVERSION}"; then
 fi
 
 # on/off
-MIX_ENV=prod mix release --env=prod
+MIX_ENV=prod mix do clean, release --env=prod
 
 ${SSH} rm -rf "${BUILD_DIR}"
 ${SSH} mkdir -p "${BUILD_DIR}"
