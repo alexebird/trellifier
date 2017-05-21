@@ -34,9 +34,10 @@ defmodule Trellifier do
     :ok
   end
 
-  def notify_goals() do
-    {:ok, goals} = Trello.cards(@trello_user, "Goals", "Goals", 3)
-    {:ok, accomplished} = Trello.cards(@trello_user, "Goals", "Accomplished", -1)
+  def notify_goals(args) do
+    [board, list] = args
+    {:ok, goals} = Trello.cards(@trello_user, board, list, 3)
+    {:ok, accomplished} = Trello.cards(@trello_user, board, "Accomplished", -1)
 
     body = """
     #{Enum.map(goals, &("G: " <> &1["name"])) |> Enum.join("\n")}
@@ -46,11 +47,17 @@ defmodule Trellifier do
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 
-  def notify_top_n(board, lists) do
-    cards = lists |> Enum.flat_map(fn([list, n])->
-      {:ok, more_cards} = Trello.cards(@trello_user, board, list, n)
-      more_cards
-    end)
+  def notify_top_n(args) do
+    [board, lists] = args
+    cards = lists
+            |> Enum.chunk(2, 2, [])
+            |> Enum.map(fn([list_name, n])->
+              [list_name, String.to_integer(n)]
+            end)
+            |> Enum.flat_map(fn([list_name, n])->
+              {:ok, more_cards} = Trello.cards(@trello_user, board, list_name, n)
+              more_cards
+            end)
 
     body = case cards do
       []  ->
@@ -62,7 +69,7 @@ defmodule Trellifier do
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
   end
 
-  def notify_progress() do
+  def notify_progress(_args) do
     {:ok, done} = Trello.cards(@trello_user, "Todo", "Done", -1)
     {:ok, doing} = Trello.cards(@trello_user, "Todo", "Doing", -1)
     {:ok, today} = Trello.cards(@trello_user, "Todo", "Today", -1)

@@ -98,12 +98,6 @@ defmodule Trello do
     args  = Enum.drop(func, 1)
             |> List.last()
             |> parse_args()
-    board = args |> Enum.take(1)
-    lists = args
-            |> Enum.drop(1)
-            |> Enum.chunk(2, 2, [])
-            |> Enum.map(fn([list, n])-> [list, String.to_integer(n)] end)
-    args = board ++ [lists]
     func = List.first(func)
 
     if String.starts_with?(func, "notify_") do
@@ -113,7 +107,7 @@ defmodule Trello do
           schedule: Enum.join(stars, " "),
           timezone: "America/Los_Angeles",
           task:     {@module_name, String.to_atom(func)},
-          args:     args,
+          args:     [args],
         }
       }
     else
