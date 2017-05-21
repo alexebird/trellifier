@@ -2,6 +2,8 @@ defmodule Trellifier do
   use Application
   require Logger
 
+  @trello_user "alexbird5"
+
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
@@ -33,8 +35,8 @@ defmodule Trellifier do
   end
 
   def notify_goals() do
-    {:ok, goals} = Trello.cards("alexbird5", "Goals", "Goals", 3)
-    {:ok, accomplished} = Trello.cards("alexbird5", "Goals", "Accomplished", -1)
+    {:ok, goals} = Trello.cards(@trello_user, "Goals", "Goals", 3)
+    {:ok, accomplished} = Trello.cards(@trello_user, "Goals", "Accomplished", -1)
 
     body = """
     #{Enum.map(goals, &("G: " <> &1["name"])) |> Enum.join("\n")}
@@ -46,7 +48,7 @@ defmodule Trellifier do
 
   def notify_top_n(board, lists) do
     cards = lists |> Enum.flat_map(fn([list, n])->
-      {:ok, more_cards} = Trello.cards("alexbird5", board, list, n)
+      {:ok, more_cards} = Trello.cards(@trello_user, board, list, n)
       more_cards
     end)
 
@@ -61,18 +63,18 @@ defmodule Trellifier do
   end
 
   def notify_progress() do
-    {:ok, done} = Trello.cards("alexbird5", "Todo", "Done", -1)
-    {:ok, doing} = Trello.cards("alexbird5", "Todo", "Doing", -1)
-    {:ok, today} = Trello.cards("alexbird5", "Todo", "Today", -1)
-    {:ok, this_week} = Trello.cards("alexbird5", "Todo", "This Week", -1)
-    {:ok, vel} = Trello.velocity("alexbird5", "Todo", "Done")
-    {:ok, quarter} = Trello.cards("alexbird5", "Todo", "2017-Q2", -1)
+    {:ok, done} = Trello.cards(@trello_user, "Todo", "Done", -1)
+    {:ok, doing} = Trello.cards(@trello_user, "Todo", "Doing", -1)
+    {:ok, today} = Trello.cards(@trello_user, "Todo", "Today", -1)
+    {:ok, this_week} = Trello.cards(@trello_user, "Todo", "This Week", -1)
+    {:ok, vel} = Trello.velocity(@trello_user, "Todo", "Done")
+    {:ok, quarter} = Trello.cards(@trello_user, "Todo", "2017-Q2", -1)
 
     total = Enum.reduce([done, doing, today, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
 
     body = """
     #{Enum.count(this_week)}-#{Enum.count(doing)}-#{Enum.count(done)}/#{total}
-    vel: #{:io_lib.format("~.1f",  [vel])}
+    vel: #{:io_lib.format("~.1f", [vel])}
     Q:   #{Enum.count quarter}
     """
 
@@ -81,8 +83,10 @@ defmodule Trellifier do
 
   def refresh_schedules() do
     Logger.info "refresh_schedules"
-    {:ok, trello_jobs} = Trello.schedules("alexbird5", "Trellifier", "Schedules")
+    {:ok, trello_jobs} = Trello.schedules(@trello_user, "Trellifier", "Schedules")
+
     quantum_jobs = Quantum.jobs
+
     del = schedules_to_delete(trello_jobs, quantum_jobs)
           |> Enum.reject(fn(e)-> e == nil end)
     start = schedules_to_start(trello_jobs, quantum_jobs)

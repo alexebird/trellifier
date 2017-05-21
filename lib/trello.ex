@@ -1,9 +1,10 @@
 defmodule Trello do
   use GenServer
+  require Logger
 
   @base_url  "https://api.trello.com/1"
-  @api_key   System.get_env("TRELLO_API_KEY")
-  @api_token System.get_env("TRELLO_API_TOKEN")
+  @api_key   (System.get_env("TRELLO_API_KEY")   || (IO.puts("must set TRELLO_API_KEY")   && System.halt(1)))
+  @api_token (System.get_env("TRELLO_API_TOKEN") || (IO.puts("must set TRELLO_API_TOKEN") && System.halt(1)))
 
   #
   # client api
@@ -54,6 +55,7 @@ defmodule Trello do
   def trello_get_schedules(member, board, list) do
     {:ok, cards} = trello_get_cards(member, board, list, -1)
     scheds = Enum.map(cards, &make_quantum/1)
+          |> Enum.reject(&is_nil/1)
     {:ok, scheds}
   end
 
@@ -73,13 +75,14 @@ defmodule Trello do
     #end)
   #end
 
+  def parse_args(str) when is_nil(str), do: []
   def parse_args(str) do
     Regex.split(~r/\".*\"/, str, include_captures: true)
     |> Enum.map(fn(e)->
-      unless String.match?(e, ~r/\"/) do
-        String.split(e, " ", trim: true)
+      if String.match?(e, ~r/\"/) do
+        String.replace(e, "\"", "")
       else
-        e
+        String.split(e, " ", trim: true)
       end
     end)
     |> List.flatten
@@ -99,17 +102,23 @@ defmodule Trello do
             |> Enum.chunk(2, 2, [])
             |> Enum.map(fn([list, n])-> [list, String.to_integer(n)] end)
     args = board ++ lists
-    [module, func] = String.split(List.first(func), ".")
+    #[module, func] = String.split(List.first(func), ".")
+    func = List.first(func)
 
-    {
-      String.to_atom("card_id_" <> id),
-      %Quantum.Job{
-        schedule: Enum.join(stars, " "),
-        timezone: "America/Los_Angeles",
-        task:     {module, String.to_atom(func)},
-        args:     args,
+    if String.starts_with?(func, "notify_") do
+      {
+        String.to_atom("card_id_" <> id),
+        %Quantum.Job{
+          schedule: Enum.join(stars, " "),
+          timezone: "America/Los_Angeles",
+          task:     {Trellifier, String.to_atom(func)},
+          args:     args,
+        }
       }
-    }
+    else
+      Logger.warn("func #{func} isn't allowed")
+      nil
+    end
   end
 
   def trello_get_velocity(member, board, list) do
