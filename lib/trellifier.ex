@@ -70,19 +70,25 @@ defmodule Trellifier do
   end
 
   def notify_progress(_args) do
-    {:ok, done} = Trello.cards(@trello_user, "Todo", "Done", -1)
-    {:ok, doing} = Trello.cards(@trello_user, "Todo", "Doing", -1)
-    {:ok, today} = Trello.cards(@trello_user, "Todo", "Today", -1)
     {:ok, this_week} = Trello.cards(@trello_user, "Todo", "This Week", -1)
-    {:ok, vel} = Trello.velocity(@trello_user, "Todo", "Done")
+    {:ok, today}     = Trello.cards(@trello_user, "Todo", "Today", -1)
+    {:ok, doing}     = Trello.cards(@trello_user, "Todo", "Doing", -1)
+    {:ok, done}      = Trello.cards(@trello_user, "Todo", "Done", -1)
+
+    {:ok, vel}     = Trello.velocity(@trello_user, "Todo", "Done")
     {:ok, quarter} = Trello.cards(@trello_user, "Todo", "2017-Q2", -1)
 
-    total = Enum.reduce([done, doing, today, this_week], 0, fn(x,acc)-> Enum.count(x) + acc end)
+    total = Enum.reduce(
+      [this_week, today, doing, done],
+      0,
+      fn(x,acc)->
+        Enum.count(x) + acc
+      end)
 
     body = """
-    #{Enum.count(this_week)}-#{Enum.count(doing)}-#{Enum.count(done)}/#{total}
+    #{Enum.count(this_week + today)}-#{Enum.count(doing)}-#{Enum.count(done)}/#{total}
     vel: #{:io_lib.format("~.1f", [vel])}
-    Q:   #{Enum.count quarter}
+    Q:   #{Enum.count(quarter)}
     """
 
     {:ok, _} = SmsSender.send_sms(System.get_env("ALEX_BIRD_CELL"), body)
