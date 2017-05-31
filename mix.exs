@@ -3,8 +3,8 @@ defmodule Trellifier.Mixfile do
 
   def project do
     [app: :trellifier,
-     version: "0.1.2",
-     elixir: "~> 1.2",
+     version: "0.1.3",
+     elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -42,7 +42,7 @@ defmodule Trellifier.Mixfile do
      {:httpoison, "~> 0.10.0"},
      {:ex_twilio, "~> 0.3.0"},
      {:quantum, ">= 1.8.1"},
-     {:distillery, "~> 1.0"},
+     {:distillery, "~> 1.4"},
    ]
   end
 

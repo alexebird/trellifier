@@ -1,6 +1,14 @@
 Trellifier
 ==========
 
+Where was I again?
+------------------
+
+```
+ssh periodic
+docker exec -it trellifier bin/trellifier remote_console
+```
+
 Questions
 ---------
 - why are tests with `.exs` extension?
@@ -43,8 +51,6 @@ Releasing
 ```bash
 eval $(gpg -d secrets/secrets.sh.gpg)
 ./deploy.sh
-
-docker exec -it trellifier bin/trellifier remote_console
 
 
 MIX_ENV=prod mix do compile, release

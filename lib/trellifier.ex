@@ -48,7 +48,7 @@ defmodule Trellifier do
   end
 
   def notify_top_n(args) do
-    [board, lists] = args
+    [board | lists] = args
     cards = lists
             |> Enum.chunk(2, 2, [])
             |> Enum.map(fn([list_name, n])->
