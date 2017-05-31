@@ -11,7 +11,7 @@ ENV APP_NAME trellifier
 #COPY _build/prod/rel/${APP_NAME}/releases/${VERSION}/${APP_NAME}.tar.gz /app/${APP_NAME}-${VERSION}.tar.gz
 COPY ./${APP_NAME}.tar.gz /app/${APP_NAME}-${VERSION}.tar.gz
 WORKDIR /app
-RUN tar xvzf ${APP_NAME}-${VERSION}.tar.gz
+RUN tar xzf ${APP_NAME}-${VERSION}.tar.gz
 RUN rm -v ${APP_NAME}-${VERSION}.tar.gz
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
